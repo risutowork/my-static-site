@@ -26,7 +26,11 @@
 
   <main>
     <div class="card">
-      <img class="hero" src="{{ hero_image }}" alt="{{ title }}" loading="lazy">
+      <img class="hero"
+     src="{{ hero_image if hero_image else 'https://placehold.co/960x540?text=No+Image' }}"
+     alt="{{ title }}"
+     loading="lazy">
+
       <div class="pad">
         <h1>{{ title }}</h1>
         <div class="meta">公開日：{{ release_date }}</div>

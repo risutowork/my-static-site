@@ -11,6 +11,7 @@
     main{max-width:920px; margin:18px auto; padding:0 16px;}
     .list{display:grid; gap:12px;}
     .item{background:#fff; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,.06); padding:14px;}
+    .hero{width:100%; height:auto; border-radius:10px; margin-bottom:10px;}
     .title{font-size:18px; margin:0 0 6px;}
     .meta{color:#6b7280; font-size:13px;}
     a{color:#2563eb; text-decoration:none;}
@@ -28,11 +29,20 @@
     <div class="list">
       {% for w in works %}
         <div class="item">
+
+          <!-- ★ 画像を追加（無い場合はプレースホルダー） -->
+          <img class="hero"
+               src="{{ w.hero_image if w.hero_image else 'https://placehold.co/960x540?text=No+Image' }}"
+               alt="{{ w.title }}"
+               loading="lazy">
+
           <p class="title">
             <a href="/works/{{ w.id }}/">{{ w.title }}</a>
           </p>
+
           <div class="meta">公開日：{{ w.release_date }}</div>
           <div class="meta">{{ w.description }}</div>
+
         </div>
       {% endfor %}
     </div>
