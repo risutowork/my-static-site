@@ -5,124 +5,55 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>{{ site_name }}</title>
   <meta name="description" content="作品一覧ページです。" />
-
-  <style>
-    body{
-      font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;
-      margin:0;
-      background:#f6f7f9;
-    }
-    header{
-      background:#111827;
-      color:#fff;
-      padding:18px 16px;
-    }
-    main{
-      max-width:920px;
-      margin:18px auto;
-      padding:0 16px;
-    }
-    .card{
-      background:#fff;
-      border-radius:14px;
-      box-shadow:0 6px 20px rgba(0,0,0,.06);
-      overflow:hidden;
-      margin-bottom:18px;
-    }
-    .hero{
-      width:100%;
-      height:auto;
-      display:block;
-    }
-    .pad{
-      padding:16px;
-    }
-    .title{
-      font-size:20px;
-      margin:0 0 6px;
-      font-weight:700;
-    }
-    .meta{
-      color:#6b7280;
-      font-size:14px;
-      margin-bottom:8px;
-    }
-    .desc{
-      font-size:14px;
-      margin:8px 0;
-    }
-    .tags{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      margin-top:10px;
-    }
-    .tag{
-      background:#eef2ff;
-      color:#3730a3;
-      padding:6px 10px;
-      border-radius:999px;
-      font-size:13px;
-    }
-    .btn{
-      display:inline-block;
-      margin-top:14px;
-      background:#2563eb;
-      color:#fff;
-      text-decoration:none;
-      padding:10px 14px;
-      border-radius:10px;
-      font-weight:700;
-    }
-    footer{
-      color:#6b7280;
-      text-align:center;
-      padding:18px 0 30px;
-    }
-  </style>
+  <link rel="stylesheet" href="/assets/style.css">
 </head>
-
 <body>
-  <header>
-    <strong>{{ site_name }}</strong>
+  <header class="header">
+    <div class="container header-inner">
+      <div class="brand">{{ site_name }}</div>
+      <nav class="nav">
+        <a href="/">作品</a>
+        <a href="/actresses/">女優</a>
+        <a href="/genres/">ジャンル</a>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <h1>作品一覧</h1>
+  <main class="container">
+    <section class="hero">
+      <h1>作品一覧</h1>
+      <p>ローカルでも開けるように index.html を指定しています。</p>
+    </section>
 
-    {% for w in works %}
-    <div class="card">
+    <div class="grid">
+      {% for w in works %}
+      <article class="card">
+        <img class="thumb" src="{{ w.hero_image }}" alt="{{ w.title }}" loading="lazy">
+        <div class="pad">
+          <h2 class="title">{{ w.title }}</h2>
+          <div class="meta">公開日：{{ w.release_date }}</div>
 
-      <!-- サムネ：最初のAと同じ仕様（変更なし） -->
-      <img class="hero" src="{{ w.hero_image }}" alt="{{ w.title }}" loading="lazy">
+          {% if w.tags %}
+          <div class="tags">
+            {% for t in w.tags[:8] %}
+              <span class="tag">{{ t }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
 
-      <div class="pad">
-        <div class="title">{{ w.title }}</div>
-        <div class="meta">公開日：{{ w.release_date }}</div>
-
-        {% if w.description %}
-          <div class="desc">{{ w.description }}</div>
-        {% endif %}
-
-        {% if w.tags %}
-        <div class="tags">
-          {% for t in w.tags %}
-            <span class="tag">{{ t }}</span>
-          {% endfor %}
+          <div class="actions">
+            <a class="btn secondary" href="/works/{{ w.id }}/">詳細を見る</a>
+            {% set link = w.official_url or w.affiliate_url or w.URL or w.affiliateURL %}
+            {% if link %}
+              <a class="btn" href="{{ link }}" target="_blank" rel="noopener">公式ページを見る</a>
+            {% endif %}
+          </div>
         </div>
-        {% endif %}
-
-        {% set link = w.affiliate_url or w.official_url or w.url or w.URL or w.affiliateURL %}
-        {% if link %}
-          <a class="btn" href="{{ link }}" target="_blank" rel="noopener">
-            公式ページを見る
-          </a>
-        {% endif %}
-      </div>
+      </article>
+      {% endfor %}
     </div>
-    {% endfor %}
 
-    <footer>© 2026 {{ site_name }}</footer>
+    <div class="footer">© 2026 {{ site_name }}</div>
   </main>
 </body>
 </html>
