@@ -83,6 +83,11 @@ def main():
     tpl_list = safe_template(env, TPL_LIST, fallback=TPL_INDEX)
 
     # =============================
+    # ★女優/ジャンルの索引をここで作る（これが無いと actresess_keys 未定義）
+    # =============================
+    actresses_map, actresses_keys, genres_map, genres_keys = build_indexes_from_works(works)
+
+    # =============================
     # CSS相対パス
     # =============================
     CSS_ROOT = "assets/style.css"
@@ -110,10 +115,10 @@ def main():
     # =============================
 
     # 作品ID→作品 dict の辞書（参照用）
-    works_by_id = {}
+    works_by_id: dict[str, dict] = {}
     for ww in works:
         if isinstance(ww, dict) and ww.get("id"):
-            works_by_id[ww["id"]] = ww
+            works_by_id[str(ww["id"])] = ww
 
     # 女優名→作品IDのリスト（関連作品用）
     actress_to_ids: dict[str, list[str]] = {}
@@ -123,6 +128,7 @@ def main():
         wid = ww.get("id")
         if not wid:
             continue
+        wid = str(wid)
         for a in (ww.get("actresses") or []):
             if not a:
                 continue
@@ -130,10 +136,9 @@ def main():
 
     def get_related_works(current_work: dict, limit: int = 12) -> list[dict]:
         """同じ女優の作品を集めて返す（自分自身は除外）"""
-        cur_id = current_work.get("id")
+        cur_id = str(current_work.get("id") or "")
         cur_actresses = current_work.get("actresses") or []
 
-        # 女優が取れてない場合は関連なし
         if not cur_actresses:
             return []
 
@@ -145,10 +150,7 @@ def main():
                 if wid not in related_ids:
                     related_ids.append(wid)
 
-        # 作品dictに変換
         related = [works_by_id[wid] for wid in related_ids if wid in works_by_id]
-
-        # 新しい順（release_date降順）にして上位limit件
         related.sort(key=lambda x: (x.get("release_date") or ""), reverse=True)
         return related[:limit]
 
@@ -156,15 +158,16 @@ def main():
         wid = w.get("id")
         if not wid:
             continue
+        wid = str(wid)
 
         related_works = get_related_works(w, limit=12)
 
         write_text(
-            OUT / "works" / str(wid) / "index.html",
+            OUT / "works" / wid / "index.html",
             tpl_page.render(
                 site_name=site_name,
                 w=w,
-                related_works=related_works,  # ← 追加
+                related_works=related_works,
                 css_path=CSS_2DOWN,
                 home_href="../../",
                 actresses_href="../../actresses/",
@@ -199,7 +202,7 @@ def main():
             OUT / "actresses" / slugify_simple(a) / "index.html",
             tpl_index.render(
                 site_name=site_name,
-                works=actresses[a],
+                works=actresses_map.get(a, []),
                 css_path=CSS_2DOWN,
                 home_href="../../",
                 actresses_href="../",
@@ -234,7 +237,7 @@ def main():
             OUT / "genres" / slugify_simple(g) / "index.html",
             tpl_index.render(
                 site_name=site_name,
-                works=genres[g],
+                works=genres_map.get(g, []),
                 css_path=CSS_2DOWN,
                 home_href="../../",
                 actresses_href="../../actresses/",
