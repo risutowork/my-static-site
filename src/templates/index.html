@@ -12,9 +12,9 @@
     <div class="container header-inner">
       <div class="brand">{{ site_name }}</div>
       <nav class="nav">
-        <a href="/">作品</a>
-        <a href="/actresses/">女優</a>
-        <a href="/genres/">ジャンル</a>
+        <a href="{{ home_href }}">作品</a>
+        <a href="{{ actresses_href }}">女優</a>
+        <a href="{{ genres_href }}">ジャンル</a>
       </nav>
     </div>
   </header>
@@ -41,7 +41,7 @@
           {% endif %}
 
           <div class="actions">
-            <a class="btn secondary" href="/works/{{ w.id }}/">詳細を見る</a>
+            <a class="btn secondary" href="{{ works_prefix }}{{ w.id }}/">詳細を見る</a>
             {% set link = w.official_url or w.affiliate_url or w.URL or w.affiliateURL %}
             {% if link %}
               <a class="btn" href="{{ link }}" target="_blank" rel="noopener">公式ページを見る</a>
@@ -56,4 +56,3 @@
   </main>
 </body>
 </html>
-
