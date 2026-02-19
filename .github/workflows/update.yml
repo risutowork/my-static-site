@@ -5,7 +5,7 @@ on:
   schedule:
     # 毎日 03:15 (JST 12:15) に実行したい例
     # GitHub ActionsのcronはUTCなので注意
-    - cron: "15 3 * * *"
+    - cron: '0 15 * * *'
 
 permissions:
   contents: write
